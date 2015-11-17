@@ -10,9 +10,12 @@ namespace NormalHandler
 {
     public class ValidateSomethingHandler : IHandleMessages<ValidateSomething>
     {
+        public IBus Bus { get; set; }
+
         public void Handle(ValidateSomething message)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("NORMAL HANDLER CALLED!!");
+            Bus.Reply(new ValidateSomethingReply());
         }
     }
 }

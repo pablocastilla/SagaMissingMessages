@@ -1,6 +1,7 @@
 
 namespace NormalHandler
 {
+    using ConversationPessimisticLocker;
     using NServiceBus;
 
     /*
@@ -20,7 +21,11 @@ namespace NormalHandler
             
             //Also note that you can mix and match storages to fit you specific needs. 
             //http://docs.particular.net/nservicebus/persistence-order
-            configuration.UsePersistence<InMemoryPersistence>();
+            configuration.UsePersistence<NHibernatePersistence>();
+
+            if (ConversationPessimisticLocker.Properties.Settings.Default.EnablePessimisticLock)
+                configuration.Pipeline.Register<ConversationPessimisticLockerStep>();
+           // configuration.Transactions().Disable();
         }
     }
 }

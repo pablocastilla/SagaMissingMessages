@@ -1,6 +1,9 @@
 
 namespace SagaMissingMessages
 {
+    using System.Threading.Tasks;
+    using ConversationPessimisticLocker;
+    using Messages;
     using NServiceBus;
 
     /*
@@ -21,6 +24,32 @@ namespace SagaMissingMessages
             //Also note that you can mix and match storages to fit you specific needs. 
             //http://docs.particular.net/nservicebus/persistence-order
             configuration.UsePersistence<NHibernatePersistence>();
+
+            if (ConversationPessimisticLocker.Properties.Settings.Default.EnablePessimisticLock)
+                configuration.Pipeline.Register<ConversationPessimisticLockerStep>();
+           // configuration.Transactions().Disable();
+        }
+    }
+
+
+    public class MyClass : IWantToRunWhenBusStartsAndStops
+    {
+        public IBus Bus { get; set; }
+
+        public void Start()
+        {
+            Parallel.For(0, 4, i =>
+                {
+                    Bus.Send("SagaMissingMessages", new InitSagaCommand());                   
+                });
+        }
+
+      
+
+
+        public void Stop()
+        {
+
         }
     }
 }
