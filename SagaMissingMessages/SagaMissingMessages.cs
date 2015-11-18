@@ -14,22 +14,22 @@ namespace SagaMissingMessages
     {
         protected override void ConfigureHowToFindSaga(SagaPropertyMapper<SagaMissingMessagesSagaData> mapper)
         {
-
+            mapper.ConfigureMapping<ValidateSomethingReply>(d => d.BusinessID).ToSaga(s=> s.BusinessID);
      
         }
 
         public void Handle(InitSagaCommand message)
         {
+            Data.BusinessID = Guid.NewGuid();
+
             using (var tran = new TransactionScope(TransactionScopeOption.Suppress))
             {
-                Bus.Send(new ValidateSomething());
+                Bus.Send(new ValidateSomething() { BusinessID=Data.BusinessID});
                 tran.Complete();
             }
 
             System.Threading.Thread.Sleep(2000);
-
-           
-            Data.BusinessID = Guid.NewGuid();
+                     
 
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 var random = new Random();

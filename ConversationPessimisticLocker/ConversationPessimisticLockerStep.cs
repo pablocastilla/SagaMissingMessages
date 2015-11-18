@@ -19,13 +19,10 @@ namespace ConversationPessimisticLocker
         public NHibernateStorageContext session { get; set; }
 
         public void Invoke(IncomingContext context, Action next)
-        {
-            bool headerExists = false;
+        {          
 
             Guid? conversationId;
-            
-
-            var connectionString = ConfigurationManager.ConnectionStrings["NServiceBus/Persistence"].ConnectionString;
+                      
 
             if (context.PhysicalMessage != null && context.PhysicalMessage.Headers != null && context.PhysicalMessage.Headers.Any(x => x.Key == LOCKERHEADERNAME))
             {
@@ -35,25 +32,33 @@ namespace ConversationPessimisticLocker
             else
             {
                 conversationId = Guid.NewGuid();
+
+                context.PhysicalMessage.Headers.Add(LOCKERHEADERNAME, conversationId.ToString());
             }
 
             //look if the locker header exists in the database
             var blockingEntity = session.Session.Get<PessimisticLockerData>(conversationId.Value,NHibernate.LockMode.Upgrade);
 
-            //if not create outside the transaction
+            //if not create the blocking row outside the transaction
             if (blockingEntity == null)
             {
                 using (var tran = new TransactionScope(TransactionScopeOption.Suppress))
                 {
                     var temporalSession =  session.Session.SessionFactory.OpenSession();
 
-                    temporalSession.Save(new PessimisticLockerData() { Id = conversationId.Value, EntryDateTime = DateTime.Now.Date });
+                    try
+                    {
+                        temporalSession.Save(new PessimisticLockerData() { Id = conversationId.Value, EntryDateTime = DateTime.Now.Date });
 
-                    temporalSession.Flush();
+                        temporalSession.Flush();
 
-                    tran.Complete();
-
-                    temporalSession.Dispose();
+                        tran.Complete();
+                    }
+                    finally
+                    {
+                        temporalSession.Dispose();
+                    }
+                    
                 }
 
                 //block it again
@@ -67,12 +72,15 @@ namespace ConversationPessimisticLocker
         }
     }
 
+    /// <summary>
+    /// this step is inserted before any saga finding logic is executed.
+    /// </summary>
     public class ConversationPessimisticLockerStep : RegisterStep
     {
         public ConversationPessimisticLockerStep()
             : base("ConversationPessimisticLockerStep", typeof(ConversationPessimisticLockerBehavior), "locks by conversation ID")
-        {
-            // Optional: Specify where it needs to be invoked in the pipeline, for example InsertBefore or InsertAfter
+        {           
+
             InsertBefore("SetCurrentMessageBeingHandled");
         }
     }

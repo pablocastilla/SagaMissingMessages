@@ -9,5 +9,6 @@ namespace Messages
 {
     public class ValidateSomething : ICommand
     {
+        public Guid BusinessID { get; set; }
     }
 }

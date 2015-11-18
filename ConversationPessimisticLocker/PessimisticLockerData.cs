@@ -7,6 +7,9 @@ using NServiceBus.Saga;
 
 namespace ConversationPessimisticLocker
 {
+    /// <summary>
+    /// Data for locking
+    /// </summary>
     public class PessimisticLockerData : ContainSagaData
     {
         public virtual DateTime EntryDateTime { get; set; }

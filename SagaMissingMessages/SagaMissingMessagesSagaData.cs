@@ -10,7 +10,7 @@ namespace SagaMissingMessages
 {
     public class SagaMissingMessagesSagaData : ContainSagaData
     {
-        
+        [Unique]
         public virtual Guid BusinessID { get; set; }
 
         public virtual char[] RawData1 { get; set; }

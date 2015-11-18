@@ -9,5 +9,6 @@ namespace Messages
 {
     public class ValidateSomethingReply : IMessage
     {
+        public Guid BusinessID { get; set; }
     }
 }

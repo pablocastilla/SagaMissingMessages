@@ -38,7 +38,7 @@ namespace SagaMissingMessages
 
         public void Start()
         {
-            Parallel.For(0, 4, i =>
+            Parallel.For(0, 1, i =>
                 {
                     Bus.Send("SagaMissingMessages", new InitSagaCommand());                   
                 });

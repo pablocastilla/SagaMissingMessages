@@ -15,7 +15,10 @@ namespace NormalHandler
         public void Handle(ValidateSomething message)
         {
             Console.WriteLine("NORMAL HANDLER CALLED!!");
-            Bus.Reply(new ValidateSomethingReply());
+
+            Bus.Send(new ValidateSomethingReply() { BusinessID = message.BusinessID });
+
+            //Bus.Reply(new ValidateSomethingReply() { BusinessID=message.BusinessID});
         }
     }
 }
