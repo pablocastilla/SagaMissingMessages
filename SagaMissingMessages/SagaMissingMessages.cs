@@ -29,20 +29,7 @@ namespace SagaMissingMessages
             }
 
             System.Threading.Thread.Sleep(2000);
-                     
-
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-                var random = new Random();
-                var result = new string(
-                    Enumerable.Repeat(chars, 1800)
-                              .Select(s => s[random.Next(s.Length)])
-                              .ToArray());
-
-            Data.RawData1 = result.ToCharArray();
-            Data.RawData2 = result.ToCharArray();
-            Data.RawData3 = result.ToCharArray();
-            Data.RawData4 = result.ToCharArray();
-            
+                                          
           
         
             Console.WriteLine("SAGA CREATED!!");

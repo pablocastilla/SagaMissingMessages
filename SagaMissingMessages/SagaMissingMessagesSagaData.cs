@@ -13,11 +13,6 @@ namespace SagaMissingMessages
         [Unique]
         public virtual Guid BusinessID { get; set; }
 
-        public virtual char[] RawData1 { get; set; }
-        public virtual char[] RawData2 { get; set; }
-        public virtual char[] RawData3 { get; set; }
-        public virtual char[] RawData4 { get; set; }
-
        
     }
 
